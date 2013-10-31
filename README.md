@@ -1,1 +1,1 @@
-clone it and run it: `./movo.rb`
+record your 'stache daily for the posterity it deserves: `./movo.rb`
