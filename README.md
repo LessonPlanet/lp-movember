@@ -1,4 +1,1 @@
-lp-movember
-===========
-
-Movember archiver and snapper
+clone it and run it: `./movo.rb`
