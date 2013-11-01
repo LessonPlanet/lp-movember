@@ -39,6 +39,10 @@ class MoSnapper
     "#{Date.today.to_s}.jpg"
   end
 
+  def todays_bw
+    "#{Date.today.to_s}-bw.jpg"
+  end
+
   def welcome
     puts <<-eos
 ................................................................................
@@ -62,6 +66,7 @@ class MoSnapper
   end
 
   def convert
+    puts "Converting..."
     unless system("convert '#{path.join(todays_tiff)}' '#{path.join(todays_jpg)}'")
       puts ''
       puts 'egads, an error!'
@@ -73,10 +78,11 @@ class MoSnapper
       exit
     end
     File.delete path.join(todays_tiff)
+    `convert '#{path.join(todays_jpg)}' -colorspace Gray '#{path.join(todays_bw)}'`
   end
 
   def preview
-    `open -a Preview "#{path.join(todays_jpg)}"`
+    `open -a Preview "#{path.join(todays_bw)}"`
   end
 
   def confirm
@@ -86,7 +92,7 @@ class MoSnapper
   end
 
   def commit
-    `git add #{path.join(todays_jpg)}`
+    `git add #{path.join(todays_jpg)} #{path.join(todays_bw)}`
     `git commit -m "Stache shot ##{Date.today.day} for #{user}!"`
     `git push`
     puts "signed, sealed, pushed!"
