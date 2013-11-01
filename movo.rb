@@ -92,6 +92,7 @@ class MoSnapper
   end
 
   def commit
+    `git pull --rebase`
     `git add #{path.join(todays_jpg)} #{path.join(todays_bw)}`
     `git commit -m "Stache shot ##{Date.today.day} for #{user}!"`
     `git push`
