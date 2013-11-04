@@ -22,8 +22,11 @@ class MoSnapper
   def call
     welcome
     while !liked
-      capture
-      convert
+      unless todays_exists?
+        capture
+        convert
+      end
+      grayscale
       preview
       confirm
     end
@@ -59,6 +62,10 @@ class MoSnapper
     eos
   end
 
+  def todays_exists?
+    File.exists? path.join(todays_jpg)
+  end
+
   def capture
     puts "Please assume the stache position..."
     `open -W MoShot.app`
@@ -78,6 +85,9 @@ class MoSnapper
       exit
     end
     File.delete path.join(todays_tiff)
+  end
+
+  def grayscale
     `convert '#{path.join(todays_jpg)}' -colorspace Gray '#{path.join(todays_bw)}'`
   end
 
