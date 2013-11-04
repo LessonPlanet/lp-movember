@@ -49,7 +49,7 @@ angular.module('movo', [])
 
     angular.forEach(images, function(el, idx) {
       if (idx == flipbook.currentIndex) {
-        el.addClass('ng-show').removeClass('ng-hide');
+        el.addClass('ng-show').removeClass('ng-hide hidden');
       }
       else {
         el.addClass('ng-hide').removeClass('ng-show');
