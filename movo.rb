@@ -97,6 +97,8 @@ class MoSnapper
     `git commit -m "Stache shot ##{Date.today.day} for #{user}!"`
     `git push`
     puts "signed, sealed, pushed!"
+    puts ""
+    puts "see the progress: http://lessonplanet.github.io/lp-movember/"
   end
 end
 
