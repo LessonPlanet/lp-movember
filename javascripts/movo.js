@@ -8,6 +8,11 @@ angular.module('movo', [])
     {handle: 'simeon', name: 'Simeon'}
   ];
 
+  $scope.runFlipBook = true;
+  $scope.runAgain = function() {
+    $scope.runFlipBook = true;
+  }
+
   var calculateDates = function() {
     var today = new Date(),
         start = new Date('November 1, 2013'),
@@ -32,8 +37,8 @@ angular.module('movo', [])
     }
   }
 })
-.directive('flipbook', function($timeout) {
-  var imageMap = {};
+.directive('flipbook', function($timeout, $q) {
+  var imageMap = {}, delay = 500;
 
   function flip(flipbook) {
     var images = flipbook.elements.filter(function(el) {
@@ -41,7 +46,8 @@ angular.module('movo', [])
     });
 
     if (flipbook.currentIndex >= images.length - 1) {
-      flipbook.currentIndex = 0;
+      flipbook.deferred.resolve();
+      return;
     }
     else {
       flipbook.currentIndex += 1;
@@ -60,15 +66,38 @@ angular.module('movo', [])
   }
 
   function flipLoop(flipbook, timeout) {
-    $timeout(function() { flip(flipbook); }, 500);
+    $timeout(function() { flip(flipbook); }, delay);
+  }
+
+  function promises() {
+    var p = [];
+    angular.forEach(imageMap, function(map) { p.push(map.deferred.promise); });
+    return p;
+  }
+
+  function watchImageMap() {
+    $q.all(promises()).then(function() {
+      $timeout(function() {
+        if (delay > 100) delay -= 100;
+        angular.forEach(imageMap, function(map) {
+          map.currentIndex = -1;
+          map.deferred = $q.defer();
+          flipLoop(map);
+        });
+        watchImageMap();
+      }, 500);
+    });
   }
 
   return {
     restrict: 'A',
     link: function($scope, $element, $attrs) {
       if (!angular.isObject(imageMap[$scope.user.handle])) {
-        imageMap[$scope.user.handle] = {currentIndex: -1, elements: []};
+        imageMap[$scope.user.handle] = {currentIndex: -1, elements: [], deferred: $q.defer()};
         flipLoop(imageMap[$scope.user.handle]);
+        if (Object.keys(imageMap).length == $scope.users.length) {
+          watchImageMap();
+        }
       }
 
       imageMap[$scope.user.handle].elements.push($element);
