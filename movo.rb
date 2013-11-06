@@ -4,7 +4,9 @@ require 'pathname'
 require 'date'
 
 class MoSnapper
-  attr_accessor :user, :path, :liked
+  attr_accessor :user, :path, :response
+
+  RESPONSES = [:initial, :liked, :redo, :quit]
 
   class << self
     def call
@@ -15,14 +17,14 @@ class MoSnapper
   def initialize
     self.user = `whoami`.strip
     self.path = Pathname.new File.join(Dir.pwd, user)
-    self.liked = false
+    self.response = :initial
     path.mkdir unless path.exist?
   end
 
   def call
     welcome
-    while !liked
-      unless todays_exists?
+    while !quit?
+      if !todays_exists? || redo?
         capture
         convert
       end
@@ -34,11 +36,11 @@ class MoSnapper
   end
 
   private
-  def todays_tiff 
+  def todays_tiff
     "#{Date.today.to_s}.tiff"
   end
 
-  def todays_jpg 
+  def todays_jpg
     "#{Date.today.to_s}.jpg"
   end
 
@@ -64,6 +66,14 @@ class MoSnapper
 
   def todays_exists?
     File.exists? path.join(todays_jpg)
+  end
+
+  def quit?
+    [:quit, :liked].include? self.response
+  end
+
+  def redo?
+    response == :redo
   end
 
   def capture
@@ -97,8 +107,14 @@ class MoSnapper
 
   def confirm
     print "Lookin' gooooood? "
-    resp = gets.strip
-    self.liked = resp =~ /y(es)?/i
+    case gets.strip
+      when /y(es)?/i
+        self.response = :liked
+      when /q(uit)/i
+        self.response = :quit
+      else
+        self.response = :redo
+    end
   end
 
   def commit
