@@ -11,7 +11,7 @@
   <body ng-controller="MainCtrl">
     <div class="container" id="mustaches">
       <h1 class="text-center">Movember Mustache Museum 2013</h1>
-      <div class="row" style="min-height: 400px">
+      <div class="row" style="min-height: 440px">
         <div class="col-md-3" ng-repeat="user in users">
           <h2 class="text-center">{{user.name}}</h2>
           <img class="hidden img-circle img-responsive fade-in" src="https://raw.github.com/LessonPlanet/lp-movember/master/{{user.handle}}/{{date}}-bw.jpg" missing-image flipbook ng-repeat="date in dates" />
