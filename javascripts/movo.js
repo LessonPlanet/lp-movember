@@ -8,11 +8,6 @@ angular.module('movo', [])
     {handle: 'simeon', name: 'Simeon'}
   ];
 
-  $scope.runFlipBook = true;
-  $scope.runAgain = function() {
-    $scope.runFlipBook = true;
-  }
-
   var calculateDates = function() {
     var today = new Date(),
         start = new Date('November 1, 2013'),
